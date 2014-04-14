@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>μPromote Node - The list of enrolled items</title>
+
+    <link rel="stylesheet" href="/node-ui/lib/bootstrap-3.1.1/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="/node-ui/app/Application.css" />
+    <link rel="stylesheet" href="/node-ui/app/PromotableItemEnroller.css" />
+
+    <script type="text/javascript" src="/node-ui/lib/jquery-2.1.0/jquery.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/bootstrap-3.1.1/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/angularjs-1.3.0/angular.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/angularjs-1.3.0/angular-resource.js"></script>
+
+    <script type="text/javascript" src="/node-ui/app/Application.js"></script>
+    <script type="text/javascript" src="/node-ui/app/EnrolledItemsList.js"></script>
+    <script type="text/javascript" src="/node-ui/app/EnrolledItemsService.js"></script>
+
+    <script type="text/javascript">
+      MuPromoteNode.controller("TestCtrl", function($scope) {
+      });
+      MuPromoteNode.config(function($provide) {
+        $provide.decorator("EnrolledItemsService", function() {
+          return {
+            'query': function() {
+              return [
+                [1.0, {name: "foo", url: "http://example.com"}],
+                [1.5, {name: "bar", url: "http://example.com"}]
+                ];
+              }
+          };
+        });
+      });
+    </script>
+
+  </head>
+  <body data-ng-app="MuPromoteNode">
+
+    <h1>The list of enrolled items.</h1>
+
+    <section class="container" data-ng-controller="TestCtrl"
+      data-ng-include="'/node-ui/app/EnrolledItemsList.html'">
+    </section>
+
+  </body>
+</html>

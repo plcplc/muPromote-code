@@ -1,0 +1,29 @@
+<article class="node-component" data-ng-controller="EnrolledItemsListCtrl">
+
+  <h1>Currently enrolled items</h1>
+
+  <p class="text-muted"> The promotable items shown in the list below are
+  enrolled for promotion. The promoted amount will be distributed to each item
+  according to its weight once you commit to executing the promotion. </p>
+
+  <button data-ng-click="refresh()">Refresh list</button>
+
+  <table class="table table-hover">
+
+    <thead>
+      <tr>
+        <th>Weight</th>
+        <th>Item</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr data-ng-repeat="witem in witems">
+        <td>{{witem[0]}}</td>
+        <td><pre class="pre-scrollable">{{witem[1]|json}}</pre></td>
+      </tr>
+    </tbody>
+
+  </table>
+
+</article>

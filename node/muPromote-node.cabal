@@ -1,0 +1,116 @@
+name:         muPromote-node
+version:      0.1.0.0
+synopsis:     The core library and executable for the μPromote node
+description:
+  The muPromote node is capable of interacting with promotion processors and
+  promotable items.
+homepage:       http://mupromote.org
+license:        GPL-3
+license-file:   LICENSE
+author:         Philip Lykke Carlsen
+maintainer:     plcplc@gmail.com
+build-type:     Simple
+cabal-version:  >=1.10
+
+flag releaseBuild
+  description:  Build for release. I.e. enable more checks.
+  default:      True
+  manual:       True
+
+library
+  exposed-modules:
+    MuPromote.Node.Base
+    MuPromote.Node.Main
+    MuPromote.Node.Operations
+    MuPromote.Node.PromotionProviderClient
+    MuPromote.Node.Web
+
+  Other-Modules:
+    Network.Wai.Utils
+
+  build-depends:
+    aeson,
+    base >=4.6 && <4.7,
+    bytestring,
+    conduit,
+    containers,
+    data-default,
+    directory,
+    encapsulated-resources,
+    http-client,
+    http-types,
+    muPromote-base,
+    network,
+    resourcet,
+    stm,
+    text,
+    transformers,
+    typed-rest-client,
+    typed-rest-server,
+    unix,
+    wai,
+    wai-app-static,
+    warp
+
+  hs-source-dirs: src
+
+  default-language: Haskell2010
+
+  if flag(releaseBuild)
+    ghc-options: -Wall -fno-warn-unused-do-bind -Werror
+  else
+    ghc-options: -Wall -fno-warn-unused-do-bind
+
+Executable node
+
+  Main-Is: node-main.hs
+
+  Build-Depends:
+    base >=4.6 && <4.7,
+    muPromote-node
+
+  default-language: Haskell2010
+
+test-suite unittest
+  type: exitcode-stdio-1.0
+  main-is: unit-main.hs
+
+  Other-Modules:
+    MuPromote.Test.Unit.NodeResource
+    MuPromote.Test.Unit.Operations
+    MuPromote.Test.Unit.PromotableItem
+    MuPromote.Test.Unit.PromotionProviderClient
+    MuPromote.Test.Unit.Runner
+    -- Duplicated from encapsulated-resources.
+    System.EncapsulatedResources.Test.EncapsulatedResources
+
+  hs-source-dirs: test
+
+  if flag(releaseBuild)
+    ghc-options: -Wall -fno-warn-unused-do-bind -Werror
+  else
+    ghc-options: -Wall -fno-warn-unused-do-bind
+
+  build-depends:
+    aeson,
+    base >=4.6 && <4.7,
+    bytestring,
+    conduit,
+    containers,
+    data-default,
+    encapsulated-resources,
+    hspec,
+    http-client,
+    http-types,
+    muPromote-base,
+    muPromote-node,
+    stm,
+    text,
+    transformers,
+    typed-rest-server,
+    typed-rest-client,
+    wai,
+    wai-test,
+    warp
+
+  default-language: Haskell2010

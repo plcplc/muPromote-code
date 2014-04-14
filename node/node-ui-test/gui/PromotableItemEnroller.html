@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>μPromote Node - Promotable Item Enroller</title>
+
+    <link rel="stylesheet" href="/node-ui/lib/bootstrap-3.1.1/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="/node-ui/app/Application.css" />
+    <link rel="stylesheet" href="/node-ui/app/PromotableItemEnroller.css" />
+
+    <script type="text/javascript" src="/node-ui/lib/jquery-2.1.0/jquery.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/bootstrap-3.1.1/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/angularjs-1.3.0/angular.js"></script>
+    <script type="text/javascript" src="/node-ui/lib/angularjs-1.3.0/angular-resource.js"></script>
+
+    <script type="text/javascript" src="/node-ui/app/Application.js"></script>
+    <script type="text/javascript" src="/node-ui/app/PromotableItemEnroller.js"></script>
+    <script type="text/javascript" src="/node-ui/app/EnrolledItemsService.js"></script>
+
+  </head>
+  <body data-ng-app="MuPromoteNode">
+
+    <h1>The Promotable Item Enroller.</h1>
+
+    <p> In this component you can paste in promotable items in serialized form.
+      You can then enroll it if you please.  </p>
+
+    <section class="container" data-ng-include="'/node-ui/app/PromotableItemEnroller.html'">
+    </section>
+
+  </body>
+</html>

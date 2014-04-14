@@ -1,0 +1,37 @@
+name: muPromote-packagekit
+
+-- The package version.  See the Haskell package versioning policy (PVP)
+-- for standards guiding when and how versions should be incremented.
+-- http://www.haskell.org/haskellwiki/Package_versioning_policy
+-- PVP summary:      +-+------- breaking API changes
+--                   | | +----- non-breaking API additions
+--                   | | | +--- code changes with no API change
+version:0.1.0.0
+synopsis: Packagekit-enabled scraper for the μPromote funding network, plus server
+description: This application regularly collects the list of installed
+             packages (using packagekit) and transmits it for use in the μPromote
+             micro-donation network.
+homepage: http://www.mupromote.net
+license: GPL-3
+author: Philip Lykke Carlsen
+maintainer: plcplc@gmail.com
+category: Distribution
+build-type: Simple
+
+-- Constraint on the version of Cabal needed to build this package.
+cabal-version: >=1.8
+
+executable muPromote-packagekit
+  -- .hs or .lhs file containing the Main module.
+  main-is: MuPromote/Client/Main.hs
+  buildable: True
+
+  -- Modules included in this executable, other than Main.
+  other-modules: MuPromote.Client.PackageKitDBus
+
+  -- Other library packages from which modules are imported.
+  build-depends: base
+               , dbus
+               , containers
+               , transformers
+               , mtl

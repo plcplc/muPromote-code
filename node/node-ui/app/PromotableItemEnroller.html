@@ -1,0 +1,32 @@
+<article class="node-component" data-ng-controller="PromotableItemEnrollerCtrl">
+  <h1>Enroll an item for promotion</h1>
+  <label for="promotableItemTextarea">Promotable item text (JSON currently)</label>
+  <textarea id="promotableItemTextarea" data-ng-model="itemText" class="form-control" rows="5"
+    placeholder="Paste a text representation of an item here."></textarea><br />
+  <div class="row-fluid">
+    <span class="col-xs12 text-warning">
+      {{itemTextStatusMessage}}
+    </span>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      <span class="text-muted">
+
+        Promotable items are free-form objects. You up your chances of speedy and
+        accurate delivery of your promotion by adhering to convention as closely
+        as possible, for example by using items supplied by the author.
+
+      </span>
+    </div>
+    <div class="col-sm-offset-1 col-sm-3">
+      <label>Enroll for promotion</label>
+      <div class="input-group">
+        <input type="number" placeholder="1.0" data-ng-model="weight" title="weight" alt="weight" class="form-control" />
+        <span class="input-group-btn">
+          <button class="btn" data-ng-disabled="enrollingDisabled"
+            data-ng-click="enrollItem()">Enroll</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</article>
