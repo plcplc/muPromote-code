@@ -1,6 +1,0 @@
-[submodule "typed-rest"]
-	path = deps/typed-rest
-	url = git@github.com:plcplc/typed-rest.git
-[submodule "encapsulated-resources"]
-	path = deps/encapsulated-resources
-	url = git://github.com/plcplc/encapsulated-resources.git
