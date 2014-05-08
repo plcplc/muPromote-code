@@ -10,6 +10,7 @@ import MuPromote.Test.Unit.PromotableItem (promotableItemSpecs)
 import MuPromote.Test.Unit.Operations (operationsSpecs)
 import MuPromote.Test.Unit.NodeResource (nodeResourceSpecs)
 import MuPromote.Test.Unit.PromotionProviderClient (promotionProviderClientSpecs)
+import MuPromote.Test.Unit.Persist (persistSpec)
 
 -- | Run the unittest test suite.
 main :: IO ()
@@ -18,3 +19,4 @@ main = runSpec $ do
   operationsSpecs
   nodeResourceSpecs
   promotionProviderClientSpecs
+  persistSpec
