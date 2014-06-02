@@ -9,7 +9,7 @@ import MuPromote.Test.Unit.PromotableItem (promotableItemSpecs)
 -- | Node tests
 import MuPromote.Test.Unit.Operations (operationsSpecs)
 import MuPromote.Test.Unit.NodeResource (nodeResourceSpecs)
-import MuPromote.Test.Unit.PromotionProviderClient (promotionProviderClientSpecs)
+import MuPromote.Test.Unit.PromotionProcessorClient (promotionProcessorClientSpecs)
 import MuPromote.Test.Unit.Persist (persistSpec)
 
 -- | Run the unittest test suite.
@@ -18,5 +18,5 @@ main = runSpec $ do
   promotableItemSpecs
   operationsSpecs
   nodeResourceSpecs
-  promotionProviderClientSpecs
+  promotionProcessorClientSpecs
   persistSpec

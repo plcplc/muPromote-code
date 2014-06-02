@@ -2,7 +2,7 @@
 {-# LANGUAGE DataKinds #-}
 -- | This module defines the Rest signatures that make up the web interface to
 -- promotion providers.
-module MuPromote.Common.ProviderSignature where
+module MuPromote.Common.ProcessorSignature where
 
 import MuPromote.Common.PromotableItem (PromotableItem)
 import Network.HTTP.Rest.Signature

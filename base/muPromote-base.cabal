@@ -20,7 +20,7 @@ library
   exposed-modules:
     MuPromote.Common.PromotableItem
     MuPromote.Common.NodeSignature
-    MuPromote.Common.ProviderSignature
+    MuPromote.Common.ProcessorSignature
     MuPromote.Common.HTTP.Client
 
   build-depends:

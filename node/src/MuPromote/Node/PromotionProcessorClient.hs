@@ -1,21 +1,21 @@
 -- | This module hosts the types and typeclasses that define the clientside
 -- interface to promotion providers.
-module MuPromote.Node.PromotionProviderClient
+module MuPromote.Node.PromotionProcessorClient
   (
-  nilProviderClient,
-  httpProviderClient,
-  PromotionProviderClient(..)
+  nilProcessorClient,
+  httpProcessorClient,
+  PromotionProcessorClient(..)
   )where
 
 import Data.Text
 import Network.HTTP.Client (closeManager, newManager, ManagerSettings)
 
 import MuPromote.Common.PromotableItem (PromotableItem)
-import MuPromote.Common.ProviderSignature (executePromoteSig, highScoreSig)
+import MuPromote.Common.ProcessorSignature (executePromoteSig, highScoreSig)
 import Network.HTTP.Rest.Client
 
 -- | A datatype that contains actions for interacting with a particular promotion provider.
-data PromotionProviderClient = PromotionProviderClient {
+data PromotionProcessorClient = PromotionProcessorClient {
 
   -- | Execute (register) the promotion of a set of items with weights.
   executePromote :: [(Double, PromotableItem)] -> IO (),
@@ -26,13 +26,13 @@ data PromotionProviderClient = PromotionProviderClient {
   }
 
 -- | A trivial provider client that does nothing.
-nilProviderClient :: PromotionProviderClient
-nilProviderClient = PromotionProviderClient (const (return ())) (return [])
+nilProcessorClient :: PromotionProcessorClient
+nilProcessorClient = PromotionProcessorClient (const (return ())) (return [])
 
 -- | A provider client using HTTP.
-httpProviderClient :: ManagerSettings -> Text -> IO PromotionProviderClient
-httpProviderClient managerSettings hostname =
-  return PromotionProviderClient {
+httpProcessorClient :: ManagerSettings -> Text -> IO PromotionProcessorClient
+httpProcessorClient managerSettings hostname =
+  return PromotionProcessorClient {
     executePromote = \items -> do
       manager <- newManager managerSettings
       res <- requestResource manager hostname executePromoteSig items

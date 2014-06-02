@@ -53,16 +53,17 @@ nodeResTest extraNodeSetup logRes = do
   resource "Node" $ do
     proxyRes "Listen-Socket" sockRh
     proxyRes "Log-Resource" logRh
+    dirRes "Storage" (return ())
     extraNodeSetup
     Node.resourceMain
 
   recieve [Match $ \ TestLogDone -> destroyRes]
 
 nodeResourceSpecs :: Spec
-nodeResourceSpecs = do
+nodeResourceSpecs =
   describe "The MuProomte Node resource" $ do
 
-    it "can be started" $ testResources 100 ( \log -> do
+    it "can be started" $ testResources 100 ( \log ->
       nodeResTest (return ())
         (const $ do
           untilLogged log Node.LogServerStarted
@@ -73,7 +74,7 @@ nodeResourceSpecs = do
         shouldContain logL [Item ("Warp server started" :: String)]
       )
 
-    it "has an api for enrolling items" $ testResources 200 ( \log -> do
+    it "has an api for enrolling items" $ testResources 200 ( \log ->
       -- Enroll two items, and check that you get correct sums back when listing.
       nodeResTest (return ()) $ \sockRh -> do
         -- Wait until the node server has started
@@ -83,7 +84,7 @@ nodeResourceSpecs = do
         clientSockH <- getConnectedSock sockRh
         let sockSettings = socketManagerSettings clientSockH
         nodeManager <- liftIO $ newManager sockSettings
-        let enrollReq = liftIO . (requestResource nodeManager "localhost" postEnrolledItemsSig)
+        let enrollReq = liftIO . requestResource nodeManager "localhost" postEnrolledItemsSig
         let listReq = liftIO $ requestResource nodeManager "localhost"  getEnrolledItemsSig
 
         enrollReq [(1.2, item2), (1.0, item3)]
@@ -98,7 +99,7 @@ nodeResourceSpecs = do
       )
 
     let testFile  = "<html><head><title>Test</title></head><body><h1>Test</h1></body></html>"
-    it "can serve static files" $ testResources 100 (\log -> do
+    it "can serve static files" $ testResources 100 (\log ->
       nodeResTest
         (void $ dirRes "WebUI-Dir" $ do
           fileRes "index.html" testFile
@@ -114,7 +115,7 @@ nodeResourceSpecs = do
 
           request <- parseUrl "http://localhost/"
           resp <- liftIO $ responseBody <$> httpLbs request nodeManager
-          liftIO $ log (Item $ T.unpack $ T.decodeUtf8 $ LBS.toStrict $ resp))
+          liftIO $ log (Item $ T.unpack $ T.decodeUtf8 $ LBS.toStrict resp))
       )
       (\logCh -> do
         logL <- logToList logCh
@@ -128,4 +129,4 @@ untilLogged log msg = do
       Node.LogDebug msg' -> liftIO $ log $ DebugMsg msg'
       _ -> return ()
     return (msg == msgRecv) ]
-  if done then untilLogged log msg else return ()
+  when done $ untilLogged log msg

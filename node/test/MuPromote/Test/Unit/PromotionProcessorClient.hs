@@ -1,8 +1,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 -- This module tests that the MuPromote http based
--- PromotionProviderClient behaves as expected.
-module MuPromote.Test.Unit.PromotionProviderClient ( promotionProviderClientSpecs ) where
+-- PromotionProcessorClient behaves as expected.
+module MuPromote.Test.Unit.PromotionProcessorClient ( promotionProcessorClientSpecs ) where
 
 import Control.Concurrent
 import Control.Exception
@@ -24,12 +24,12 @@ import System.EncapsulatedResources.Test.EncapsulatedResources
 import MuPromote.Test.Unit.PromotableItem ( item2 )
 
 -- | AUT includes
-import qualified MuPromote.Node.PromotionProviderClient as PPC
-import MuPromote.Common.ProviderSignature
+import qualified MuPromote.Node.PromotionProcessorClient as PPC
+import MuPromote.Common.ProcessorSignature
 import Network.HTTP.Rest.Server
 
-promotionProviderClientSpecs :: Spec
-promotionProviderClientSpecs =
+promotionProcessorClientSpecs :: Spec
+promotionProcessorClientSpecs =
   describe "The http promotion provider client" $ do
     let hostname = "testprovider"
     let highScoreData = [(42, item2)]
@@ -54,7 +54,7 @@ promotionProviderClientSpecs =
         sock <- getConnectedSock testSockR
 
         liftIO $ do
-          pcc <-  PPC.httpProviderClient (socketManagerSettings sock) hostname
+          pcc <-  PPC.httpProcessorClient (socketManagerSettings sock) hostname
           res <- handle (\(SomeException a)-> log (show a) >> return [])
             (PPC.listHighScore pcc)
           log $ show res
@@ -73,7 +73,7 @@ promotionProviderClientSpecs =
           thdId <- forkIO $
             Warp.runSettingsSocket (
             Warp.setBeforeMainLoop (notifyClient ()) $ Warp.setOnClose (\_ -> putMVar exitMV ()) Warp.defaultSettings)
-            sock (mockProvider log highScoreData)
+            sock (mockProcessor log highScoreData)
 
           -- Kill the server once it has served its request
           takeMVar exitMV
@@ -103,8 +103,8 @@ notFoundResp :: Wai.Response
 notFoundResp = responseLBS status404 [(hContentType, "text/plain")] "Not found."
 
 -- | A mock promotion provider that logs recieved requests.
-mockProvider :: (String -> IO ()) ->  [(Double, PromotableItem)] -> Application
-mockProvider log highScore req = do
+mockProcessor :: (String -> IO ()) ->  [(Double, PromotableItem)] -> Application
+mockProcessor log highScore req = do
 
   -- reqBody <- lazyRequestBody req
   -- log $ "Request" ++ (show $ (requestMethod req, httpVersion req, requestHeaders req, rawPathInfo req, reqBody))

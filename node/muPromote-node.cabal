@@ -25,7 +25,7 @@ library
     MuPromote.Node.Main
     MuPromote.Node.Operations
     MuPromote.Node.Persist
-    MuPromote.Node.PromotionProviderClient
+    MuPromote.Node.PromotionProcessorClient
     MuPromote.Node.Web
 
   Other-Modules:
@@ -88,7 +88,7 @@ test-suite unittest
     MuPromote.Test.Unit.Operations
     MuPromote.Test.Unit.Persist
     MuPromote.Test.Unit.PromotableItem
-    MuPromote.Test.Unit.PromotionProviderClient
+    MuPromote.Test.Unit.PromotionProcessorClient
     MuPromote.Test.Unit.Runner
     -- Duplicated from encapsulated-resources.
     System.EncapsulatedResources.Test.EncapsulatedResources

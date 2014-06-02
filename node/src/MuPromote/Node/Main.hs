@@ -7,7 +7,6 @@ module MuPromote.Node.Main (
   ) where
 
 import Control.Applicative
-import Control.Monad.IO.Class ( liftIO )
 
 import qualified Data.Map as M
 import Data.String
@@ -25,7 +24,7 @@ import System.EncapsulatedResources
 
 import MuPromote.Node.Base
 import MuPromote.Node.Persist
-import MuPromote.Node.PromotionProviderClient
+import MuPromote.Node.PromotionProcessorClient
 import MuPromote.Node.Web
 
 -- | The type used for event logs. Log entries are sent to the 'Log-Resource'
@@ -47,7 +46,7 @@ resourceMain = do
 
   logAct <- wireLogRes
   uiApp  <- wireUIRes logAct
-  evStore <- wireStorageRes
+  evStore <- wireStorageRes logAct
 
   -- Get the socket to listen to
   sockRh <- M.lookup "Listen-Socket" <$> resChildren
@@ -63,7 +62,7 @@ resourceMain = do
 
   -- Construct the node.
   liftIO $ do
-    node <- spawnNode evStore nilProviderClient
+    let node = spawnNode evStore nilProcessorClient
     startWarpAct (nodeApiMiddleware node uiApp)
 
 -- | The settings used by the Warp server.

@@ -13,7 +13,7 @@ module MuPromote.Node.Base (
 
 import MuPromote.Common.PromotableItem (PromotableItem(..))
 import MuPromote.Node.Persist
-import MuPromote.Node.PromotionProviderClient
+import MuPromote.Node.PromotionProcessorClient
 
 import Data.SafeCopy
 import Data.Serialize
@@ -25,7 +25,7 @@ data Node = Node {
   nodeEventStore :: EventStore NodeAction,
 
   -- | A handle to the promotion processor that the node interfaces with.
-  nodeProcessor :: PromotionProviderClient
+  nodeProcessor :: PromotionProcessorClient
 
   }
 
@@ -54,7 +54,7 @@ instance SafeCopy PromotableItem where
 
   putCopy pItem = contain $ do
     put $ name pItem
-    put $ promotionProvider pItem
+    put $ promotionProcessor pItem
 
   getCopy = contain $ do
     nm <- get
@@ -76,5 +76,5 @@ data NodeAction =
   | ExecutePromoteCompletedAction
 
 -- | Construct a node instance, given a provider.
-spawnNode :: EventStore NodeAction -> PromotionProviderClient -> Node
+spawnNode :: EventStore NodeAction -> PromotionProcessorClient -> Node
 spawnNode = Node

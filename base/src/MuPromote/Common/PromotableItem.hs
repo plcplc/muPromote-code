@@ -22,7 +22,7 @@ data PromotableItem = PromotableItem {
   name :: String,
 
   -- | The provider that handles this promotable.
-  promotionProvider :: String
+  promotionProcessor :: String
 } deriving (Eq, Generic, Read, Show)
 
 instance FromJSON PromotableItem

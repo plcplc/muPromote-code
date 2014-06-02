@@ -7,22 +7,26 @@ module MuPromote.Node.Persist
     Report,
     appendEvent,
     dirBackedEventStore,
+    memoryBackedEventStore,
     evalReport,
     lookupEvent,
     registerReport
-  )where
+  )
+  where
 
 import Control.Applicative
 import Control.Arrow
+import Control.Concurrent.MVar
+import Control.Exception
 import Control.Monad
-import Data.Maybe
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64 as B64
+import qualified Data.Map as M
+import Data.Maybe
 import Data.SafeCopy
 import qualified Data.Serialize as DS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import Control.Exception
 import System.Directory
 import System.IO.Error
 
@@ -104,6 +108,24 @@ dirBackedEventStore dir = do
     -- | Base64-encoding for strings.
     encBase64 :: String -> String
     encBase64 = T.unpack . T.decodeUtf8 . B64.encode . T.encodeUtf8 . T.pack
+
+-- | An 'EventStore a', backed by MVars.
+memoryBackedEventStore :: SafeCopy a => IO (EventStore a)
+memoryBackedEventStore = do
+  reportsMV <- newMVar M.empty
+  actionsMV <- newMVar []
+  return $ ES EventStoreBackend {
+    esAppendEvent = \bs -> modifyMVar_ actionsMV (return . (bs:)),
+    esNumEvents = fmap length (readMVar actionsMV),
+    esLookupEvent = \ix -> do
+      evs <- readMVar actionsMV
+      -- events are reversed relative to list indexing
+      return $ case drop (length evs - succ ix) evs of
+        [] -> Nothing
+        ev:_ -> Just ev,
+    esReadReport = \reportName -> fmap (M.lookup reportName) (readMVar reportsMV),
+    esStoreReport = \reportName val -> modifyMVar_ reportsMV (return . M.insert reportName val)
+    }
 
 -- | Append an event to an EventStore.
 appendEvent :: SafeCopy a => EventStore a -> a -> IO ()

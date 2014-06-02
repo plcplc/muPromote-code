@@ -51,12 +51,12 @@ promotableItem =
 
 -- | A marshalled promotable item.
 item1Str :: String
-item1Str = "PromotableItem{name=\"KDE\", promotionProvider=\"Kudo high score\"}"
+item1Str = "PromotableItem{name=\"KDE\", promotionProcessor=\"Kudo high score\"}"
 
 -- | A test item
 item2 :: PromotableItem
-item2 = PromotableItem{name="Gnome", promotionProvider="Kudo high score"}
+item2 = PromotableItem{name="Gnome", promotionProcessor="Kudo high score"}
 
 -- | Another test item
 item3 :: PromotableItem
-item3 = PromotableItem{name="Pirate Party", promotionProvider="flattr"}
+item3 = PromotableItem{name="Pirate Party", promotionProcessor="flattr"}

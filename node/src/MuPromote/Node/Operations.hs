@@ -14,7 +14,7 @@ module MuPromote.Node.Operations (
 import Control.Applicative
 import Data.SafeCopy
 import MuPromote.Common.PromotableItem (PromotableItem(..), addItem)
-import qualified MuPromote.Node.PromotionProviderClient as PC
+import qualified MuPromote.Node.PromotionProcessorClient as PC
 import MuPromote.Node.Base
 import MuPromote.Node.Persist
 
