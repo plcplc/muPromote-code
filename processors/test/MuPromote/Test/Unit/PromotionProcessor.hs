@@ -1,6 +1,6 @@
 -- | Here we test the interfacing with promotion providers, using Kudo as a
 -- mock.
-module MuPromote.Test.Unit.PromotionProvider (
+module MuPromote.Test.Unit.PromotionProcessor (
   providerSpecs
   ) where
 
@@ -8,7 +8,7 @@ module MuPromote.Test.Unit.PromotionProvider (
 import Test.Hspec
 
 -- | AUT includes.
-import MuPromote.Provider.Kudo as K
+import MuPromote.Processor.Kudo as K
 
 -- | Test includes.
 import MuPromote.Test.Unit.PromotableItem (item2, item3)

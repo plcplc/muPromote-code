@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- | This module tests the web interface to promotion providers.
-module MuPromote.Test.Unit.PromotionProviderWeb (
+module MuPromote.Test.Unit.PromotionProcessorWeb (
   providerWebSpecs
   ) where
 
@@ -15,7 +15,7 @@ import Network.Wai.Test
   runSession, request, srequest, SResponse, SRequest(..), simpleBody)
 
 -- | AUT includes.
-import MuPromote.Provider.KudoWeb as KW
+import MuPromote.Processor.KudoWeb as KW
 import MuPromote.Common.PromotableItem
 
 -- | Test data includes.

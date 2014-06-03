@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- | This module houses the networked interface to the kudo promotion provider.
-module MuPromote.Provider.KudoWeb (
+module MuPromote.Processor.KudoWeb (
 
   -- * The resource signatures of the Kudo provider web service.
   executePromoteSig,
@@ -21,9 +21,9 @@ import Network.HTTP.Types.Status (status200, created201, status404)
 
 import Network.Wai (Application, Response, responseLBS)
 
-import MuPromote.Common.ProviderSignature
+import MuPromote.Common.ProcessorSignature
 import Network.HTTP.Rest.Server
-import MuPromote.Provider.Kudo
+import MuPromote.Processor.Kudo
 
 kudoApp :: IO Application
 kudoApp = do

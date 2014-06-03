@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 -- | This module defines the pseudo-provider for Kudos
-module MuPromote.Provider.Kudo (
+module MuPromote.Processor.Kudo (
 
   spawnKudo,
   executePromote,

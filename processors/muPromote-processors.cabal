@@ -20,9 +20,9 @@ flag releaseBuild
 library
 
   exposed-modules:
-    MuPromote.Provider.Kudo
-    MuPromote.Provider.Kudo.Main
-    MuPromote.Provider.KudoWeb
+    MuPromote.Processor.Kudo
+    MuPromote.Processor.Kudo.Main
+    MuPromote.Processor.KudoWeb
 
   build-depends:
     aeson,
@@ -61,8 +61,8 @@ test-suite unittest
   main-is: unit-main.hs
 
   Other-Modules:
-    MuPromote.Test.Unit.PromotionProviderResource,
-    MuPromote.Test.Unit.PromotionProviderWeb,
+    MuPromote.Test.Unit.PromotionProcessorResource,
+    MuPromote.Test.Unit.PromotionProcessorWeb,
     MuPromote.Test.Unit.Runner
     -- Duplicated from encapsulated-resources
     System.EncapsulatedResources.Test.EncapsulatedResources

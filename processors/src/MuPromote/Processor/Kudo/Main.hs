@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 -- | This module houses the functions for booting up a MuPromote Kudo Promotion
--- Provider as a standalone executable.
-module MuPromote.Provider.Kudo.Main (
+-- Processor as a standalone executable.
+module MuPromote.Processor.Kudo.Main (
   EventLog(..),
   resourceMain
   ) where
@@ -16,12 +16,12 @@ import System.IO ( hGetContents )
 import System.EncapsulatedResources
   ( getBoundSock, lookupRes, resAsFileHandle, resource, ResourceM, ResourceHandle, send, sendIO )
 
-import MuPromote.Provider.KudoWeb ( kudoApp )
+import MuPromote.Processor.KudoWeb ( kudoApp )
 
 -- | The type used to represent the configuration of the promotion provdier. The principal
 -- source of such a configuration is through the resource named 'config',
--- handled by 'read'-ing and 'show'-ing 'ProviderConfig's.
-type ProviderConfig = [(String, String)]
+-- handled by 'read'-ing and 'show'-ing 'ProcessorConfig's.
+type ProcessorConfig = [(String, String)]
 
 -- | The type used for event logs. Log entries are sent to the 'Log-Resource'
 -- resource given in the 'config' resource.
@@ -40,7 +40,7 @@ resourceMain = resource "Kudo promotion provider" $ do
   -- Source config file
   configRh <- lookupRes "config"
   cfgH <- resAsFileHandle configRh
-  cfg  <- liftIO $ (read :: String -> ProviderConfig) <$> hGetContents cfgH
+  cfg  <- liftIO $ (read :: String -> ProcessorConfig) <$> hGetContents cfgH
 
   -- Start server
   let Just sockResName = lookup "Listen-Socket" cfg

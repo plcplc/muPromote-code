@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 -- This module tests that the MuPromote Promotion kudo provider behaves as expected in its Resource environment.
-module MuPromote.Test.Unit.PromotionProviderResource ( providerResourceSpecs ) where
+module MuPromote.Test.Unit.PromotionProcessorResource ( providerResourceSpecs ) where
 
 -- | Library includes
 import Control.Monad
@@ -13,7 +13,7 @@ import System.EncapsulatedResources
 import System.EncapsulatedResources.Test.EncapsulatedResources
 
 -- | AUT includes
-import qualified MuPromote.Provider.Kudo.Main as Kudo
+import qualified MuPromote.Processor.Kudo.Main as Kudo
 
 data TestLog = TestLogDone
   deriving (Typeable)
