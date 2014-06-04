@@ -3,14 +3,14 @@ module Main where
 
 import MuPromote.Test.Unit.Runner(runSpec)
 
--- | Promotion provider tests
-import MuPromote.Test.Unit.PromotionProcessor (providerSpecs)
-import MuPromote.Test.Unit.PromotionProcessorResource (providerResourceSpecs)
-import MuPromote.Test.Unit.PromotionProcessorWeb (providerWebSpecs)
+-- | Promotion processor tests
+import MuPromote.Test.Unit.PromotionProcessor (processorSpecs)
+import MuPromote.Test.Unit.PromotionProcessorResource (processorResourceSpecs)
+import MuPromote.Test.Unit.PromotionProcessorWeb (processorWebSpecs)
 
 -- | Run the unittest test suite.
 main :: IO ()
 main = runSpec $ do
-  providerSpecs
-  providerResourceSpecs
-  providerWebSpecs
+  processorSpecs
+  processorResourceSpecs
+  processorWebSpecs

@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
--- | This module defines the pseudo-provider for Kudos
+-- | This module defines the pseudo promotion processor for Kudos
 module MuPromote.Processor.Kudo (
 
   spawnKudo,
@@ -13,7 +13,7 @@ import Control.Concurrent.STM (TVar, newTVarIO, modifyTVar, atomically, readTVar
 
 import MuPromote.Common.PromotableItem (PromotableItem, mergeItems)
 
--- Development note: For flexibility, incubate the provider web service
+-- Development note: For flexibility, incubate the processor web service
 -- interface + implementation here. Later it moves to a separate package.
 
 {- file Readme.md:
@@ -27,7 +27,7 @@ data KudoHandle = KudoHandle {
   kudos :: TVar [(Double, PromotableItem)]
   }
 
--- | Spawn a new instance of the Kudo highscore test provider.
+-- | Spawn a new instance of the Kudo highscore test processor.
 spawnKudo :: IO KudoHandle
 spawnKudo = KudoHandle <$> newTVarIO []
 

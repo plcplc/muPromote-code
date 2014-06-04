@@ -2,10 +2,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
--- | This module houses the networked interface to the kudo promotion provider.
+-- | This module houses the networked interface to the kudo promotion processor.
 module MuPromote.Processor.KudoWeb (
 
-  -- * The resource signatures of the Kudo provider web service.
+  -- * The resource signatures of the Kudo processor web service.
   executePromoteSig,
   highScoreSig,
 

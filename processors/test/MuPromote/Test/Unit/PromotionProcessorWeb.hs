@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- | This module tests the web interface to promotion providers.
+-- | This module tests the web interface to promotion processors.
 module MuPromote.Test.Unit.PromotionProcessorWeb (
-  providerWebSpecs
+  processorWebSpecs
   ) where
 
 -- | Library includes.
@@ -21,17 +21,17 @@ import MuPromote.Common.PromotableItem
 -- | Test data includes.
 import MuPromote.Test.Unit.PromotableItem (item2, item3)
 
--- | The specs of provider tests.
-providerWebSpecs :: Spec
-providerWebSpecs = describe "The provider REST http interface (using kudo for backend incidentally)" $ do
+-- | The specs of processor tests.
+processorWebSpecs :: Spec
+processorWebSpecs = describe "The processor REST http interface (using kudo for backend incidentally)" $ do
   executePromoteKudo
 
--- | Executing promotions on a kudo provider.
+-- | Executing promotions on a kudo processor.
 executePromoteKudo :: Spec
 executePromoteKudo = do
   describe "Receiving promotion execute requests" $ do
     it "increases the count of promoted items" $ do
-      providerApp <- KW.kudoApp
+      processorApp <- KW.kudoApp
 
       maybeHighScore <- runSession (do
 
@@ -52,7 +52,7 @@ executePromoteKudo = do
 
         return $ decodeHighScoreResp highScoreResp
 
-        ) providerApp
+        ) processorApp
 
       shouldSatisfy maybeHighScore isJust
 

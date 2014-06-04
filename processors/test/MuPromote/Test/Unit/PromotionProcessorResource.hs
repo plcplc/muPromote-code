@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
--- This module tests that the MuPromote Promotion kudo provider behaves as expected in its Resource environment.
-module MuPromote.Test.Unit.PromotionProcessorResource ( providerResourceSpecs ) where
+-- This module tests that the MuPromote Promotion kudo processor behaves as expected in its Resource environment.
+module MuPromote.Test.Unit.PromotionProcessorResource ( processorResourceSpecs ) where
 
 -- | Library includes
 import Control.Monad
@@ -18,8 +18,8 @@ import qualified MuPromote.Processor.Kudo.Main as Kudo
 data TestLog = TestLogDone
   deriving (Typeable)
 
-providerResourceSpecs :: Spec
-providerResourceSpecs = do
+processorResourceSpecs :: Spec
+processorResourceSpecs = do
   describe "The MuProomte Kudo resource" $ do
 
     it "can be started" $ testResources 100 ( \log -> lookupableRes $ do
@@ -27,12 +27,12 @@ providerResourceSpecs = do
       root <- currentRes
 
       let logRes  = "logger resource"
-      let providerSock = "provider communication socket"
+      let processorSock = "processor communication socket"
 
-      sockRes providerSock
+      sockRes processorSock
 
       fileRes "config" (show [
-        ("Listen-Socket", providerSock),
+        ("Listen-Socket", processorSock),
         ("Log-Resource", logRes)
         ])
 

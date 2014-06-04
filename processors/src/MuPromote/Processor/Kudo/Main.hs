@@ -35,7 +35,7 @@ data EventLog = EventLogEntry String
 -- division is necessary to maintain the illusion that resources have
 -- 'persistent/start-stop' semantics.
 resourceMain :: ResourceM ResourceHandle
-resourceMain = resource "Kudo promotion provider" $ do
+resourceMain = resource "Kudo promotion processor" $ do
 
   -- Source config file
   configRh <- lookupRes "config"
@@ -54,11 +54,11 @@ resourceMain = resource "Kudo promotion provider" $ do
   send logRes (EventLogEntry "lookupRes sockResName")
 
   sock   <- getBoundSock sockRh
-  liftIO $ kudoApp >>= runSettingsSocket (providerWarpSettings logAct) sock
+  liftIO $ kudoApp >>= runSettingsSocket (processorWarpSettings logAct) sock
 
 -- | The settings used by the Warp server.
-providerWarpSettings :: (EventLog -> IO ()) -> Settings
-providerWarpSettings logAct =
+processorWarpSettings :: (EventLog -> IO ()) -> Settings
+processorWarpSettings logAct =
   setBeforeMainLoop (logAct $ EventLogEntry "Warp server started") defaultSettings
 
 -- | The 'main' action initializes the Node instance 'Resource' context that
