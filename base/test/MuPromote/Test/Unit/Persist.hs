@@ -10,7 +10,7 @@ import System.EncapsulatedResources.Test.EncapsulatedResources
 import Test.Hspec
 
 -- | AUT includes
-import MuPromote.Node.Persist
+import MuPromote.Common.Persist
 
 
 persistSpec :: Spec

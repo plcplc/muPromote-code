@@ -13,10 +13,10 @@ module MuPromote.Node.Operations (
 
 import Control.Applicative
 import Data.SafeCopy
+import MuPromote.Common.Persist
 import MuPromote.Common.PromotableItem (PromotableItem(..), addItem)
 import qualified MuPromote.Node.PromotionProcessorClient as PC
 import MuPromote.Node.Base
-import MuPromote.Node.Persist
 
 -- | A data type representing the contents of the enrolled itmes report.
 data EnrolledItemsReport = EnrolledItemsReport {

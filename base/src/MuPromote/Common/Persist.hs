@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 -- | This module houses the persitence backend for node operations. It
 -- supports appending events and caching reports.
-module MuPromote.Node.Persist
+module MuPromote.Common.Persist
   (
     EventStore,
     Report,

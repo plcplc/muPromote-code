@@ -22,8 +22,8 @@ import Network.Wai.Utils
 
 import System.EncapsulatedResources
 
+import MuPromote.Common.Persist
 import MuPromote.Node.Base
-import MuPromote.Node.Persist
 import MuPromote.Node.PromotionProcessorClient
 import MuPromote.Node.Web
 

@@ -1,9 +1,12 @@
-{ aeson, cabal, httpClient, network, typedRestTypes }:
+{ aeson, cabal, cereal, encapsulatedResources, hspec, httpClient, network, safecopy, stm, typedRestTypes }:
 
 cabal.mkDerivation (self: {
   pname = "muPromote-base";
   version = "0.1.0.0";
-  buildDepends = [ aeson httpClient network typedRestTypes ];
+  buildDepends = [
+    aeson cereal encapsulatedResources hspec httpClient network
+    safecopy stm typedRestTypes
+    ];
   src = ./.;
   meta = {
     homepage = "http://mupromote.net";

@@ -24,7 +24,6 @@ library
     MuPromote.Node.Base
     MuPromote.Node.Main
     MuPromote.Node.Operations
-    MuPromote.Node.Persist
     MuPromote.Node.PromotionProcessorClient
     MuPromote.Node.Web
 
@@ -86,7 +85,6 @@ test-suite unittest
   Other-Modules:
     MuPromote.Test.Unit.NodeResource
     MuPromote.Test.Unit.Operations
-    MuPromote.Test.Unit.Persist
     MuPromote.Test.Unit.PromotableItem
     MuPromote.Test.Unit.PromotionProcessorClient
     MuPromote.Test.Unit.Runner

@@ -18,11 +18,11 @@ import Control.Concurrent.STM (TVar, newTVarIO, modifyTVar, atomically, readTVar
 import Test.Hspec
 
 -- | AUT includes.
+import MuPromote.Common.Persist
 import MuPromote.Common.PromotableItem (PromotableItem)
 import MuPromote.Node.Base as B
 import MuPromote.Node.Operations as O
 import MuPromote.Node.PromotionProcessorClient as PC
-import MuPromote.Node.Persist
 
 -- | Test includes.
 import MuPromote.Test.Unit.PromotableItem (item2, item3)

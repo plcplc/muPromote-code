@@ -12,7 +12,7 @@ module MuPromote.Node.Base (
   ) where
 
 import MuPromote.Common.PromotableItem (PromotableItem(..))
-import MuPromote.Node.Persist
+import MuPromote.Common.Persist
 import MuPromote.Node.PromotionProcessorClient
 
 import Data.SafeCopy
