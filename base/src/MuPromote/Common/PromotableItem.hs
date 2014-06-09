@@ -14,6 +14,8 @@ module MuPromote.Common.PromotableItem
   ) where
 
 import Data.Aeson
+import Data.SafeCopy
+import Data.Serialize
 import GHC.Generics
 
 -- | The data type representing Promotable Items.
@@ -48,3 +50,16 @@ addItem :: (Double, PromotableItem) -> [(Double, PromotableItem)] -> [(Double, P
 addItem wi [] = [wi]
 addItem (w,i) ((w',i'):r) | i == i' = (w+w', i):r
 addItem wi (wi':r) = wi':(addItem wi r)
+
+instance SafeCopy PromotableItem where
+
+  version = 0
+
+  putCopy pItem = contain $ do
+    put $ name pItem
+    put $ promotionProcessor pItem
+
+  getCopy = contain $ do
+    nm <- get
+    pp <- get
+    return $ PromotableItem nm pp

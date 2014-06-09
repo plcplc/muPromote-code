@@ -1,5 +1,5 @@
 -- | This module defines the basic node lifecycle operations and types.
-{-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
 module MuPromote.Node.Base (
 
   -- * Node instance
@@ -47,19 +47,6 @@ instance SafeCopy NodeAction where
         return $ EnrollItemAction wItem
       1 -> return ExecutePromoteInitiatedAction
       2 -> return ExecutePromoteCompletedAction
-
-instance SafeCopy PromotableItem where
-
-  version = 0
-
-  putCopy pItem = contain $ do
-    put $ name pItem
-    put $ promotionProcessor pItem
-
-  getCopy = contain $ do
-    nm <- get
-    pp <- get
-    return $ PromotableItem nm pp
 
 -- | A data type for the state-changing actions that may be performed with a node.
 data NodeAction =

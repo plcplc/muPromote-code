@@ -31,7 +31,7 @@ import MuPromote.Node.Web
 -- resource given in the 'config' resource.
 data EventLog = LogServerStarted
   | LogDebug String
-  deriving (Eq, Typeable)
+  deriving (Eq, Show, Typeable)
 
 type LogAct = EventLog -> IO ()
 
