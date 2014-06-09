@@ -8,7 +8,10 @@ in rec {
   typedRestServer = hsScope <typed-rest/server/cabal.nix> {inherit typedRestTypes;};
   encapsulatedResources = hsScope <encapsulated-resources/encapsulated-resources.nix> {};
 
-  muPromoteBase = hsScope ./../base/cabal.nix {inherit typedRestTypes;};
+  muPromoteBase = hsScope ./../base/cabal.nix {
+    inherit encapsulatedResources;
+    inherit typedRestTypes;
+    };
   muPromoteNode = hsScope ./../node/cabal.nix {
     inherit encapsulatedResources;
     inherit muPromoteBase;
