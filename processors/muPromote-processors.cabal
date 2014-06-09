@@ -22,12 +22,15 @@ library
   exposed-modules:
     MuPromote.Processor.Kudo
     MuPromote.Processor.Kudo.Main
-    MuPromote.Processor.KudoWeb
+    MuPromote.Processor.Kudo.Application
+    MuPromote.Processor.Kudo.Operations
+    Network.Wai.Utils
 
   build-depends:
     aeson,
     base >=4.6 && <4.7,
     bytestring,
+    cereal,
     conduit,
     containers,
     data-default,
@@ -38,6 +41,7 @@ library
     muPromote-base,
     network,
     resourcet,
+    safecopy,
     stm,
     text,
     transformers,
@@ -56,11 +60,23 @@ library
   else
     ghc-options: -Wall -fno-warn-unused-do-bind
 
+Executable kudo
+
+  Main-Is: kudo-main.hs
+
+  Build-Depends:
+    base >=4.6 && <4.7,
+    encapsulated-resources,
+    muPromote-processors
+
+  default-language: Haskell2010
+
 test-suite unittest
   type: exitcode-stdio-1.0
   main-is: unit-main.hs
 
   Other-Modules:
+    MuPromote.Test.Unit.PromotableItem,
     MuPromote.Test.Unit.PromotionProcessorResource,
     MuPromote.Test.Unit.PromotionProcessorWeb,
     MuPromote.Test.Unit.Runner

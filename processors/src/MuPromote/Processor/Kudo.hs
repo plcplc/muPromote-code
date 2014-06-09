@@ -1,40 +1,44 @@
-{-# LANGUAGE RecordWildCards #-}
 -- | This module defines the pseudo promotion processor for Kudos
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
 module MuPromote.Processor.Kudo (
 
   spawnKudo,
-  executePromote,
-  listHighscore
+  KudoProcessor(..),
+  ProcessorAction(..)
 
   ) where
 
-import Control.Applicative
-import Control.Concurrent.STM (TVar, newTVarIO, modifyTVar, atomically, readTVar)
+import Data.SafeCopy
+import Data.Serialize
 
-import MuPromote.Common.PromotableItem (PromotableItem, mergeItems)
+import MuPromote.Common.Persist
+import MuPromote.Common.PromotableItem (PromotableItem)
 
--- Development note: For flexibility, incubate the processor web service
--- interface + implementation here. Later it moves to a separate package.
-
-{- file Readme.md:
-
-
-
--}
+-- | The data type for the actions that a promotion processor can perform.
+data ProcessorAction =
+  ExecutedPromoteAction! [(Double, PromotableItem)]
+  deriving (Eq, Show)
 
 -- | Data type representing the kudo service internally.
-data KudoHandle = KudoHandle {
-  kudos :: TVar [(Double, PromotableItem)]
+data KudoProcessor = KudoProcessor {
+  kpEventStore :: EventStore ProcessorAction
   }
 
+instance SafeCopy ProcessorAction where
+
+  version = 0
+
+  putCopy (ExecutedPromoteAction witems) = contain $ do
+    putWord8 0
+    safePut witems
+
+  getCopy = contain $ do
+    tag <- getWord8
+    case tag of
+      0 -> do
+        wItems <- safeGet
+        return $ ExecutedPromoteAction wItems
+
 -- | Spawn a new instance of the Kudo highscore test processor.
-spawnKudo :: IO KudoHandle
-spawnKudo = KudoHandle <$> newTVarIO []
-
--- | Execute a promotion on a kudo instance.
-executePromote :: KudoHandle -> [(Double, PromotableItem)] -> IO ()
-executePromote (KudoHandle{..}) newKudos = atomically $
-  modifyTVar kudos (mergeItems newKudos)
-
-listHighscore :: KudoHandle -> IO [(Double, PromotableItem)]
-listHighscore (KudoHandle{..}) = atomically $ readTVar kudos
+spawnKudo :: EventStore ProcessorAction -> KudoProcessor
+spawnKudo = KudoProcessor

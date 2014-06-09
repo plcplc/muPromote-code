@@ -15,7 +15,10 @@ import Network.Wai.Test
   runSession, request, srequest, SResponse, SRequest(..), simpleBody)
 
 -- | AUT includes.
-import MuPromote.Processor.KudoWeb as KW
+import Network.Wai.Utils
+import MuPromote.Common.Persist
+import MuPromote.Processor.Kudo as K
+import MuPromote.Processor.Kudo.Application as KA
 import MuPromote.Common.PromotableItem
 
 -- | Test data includes.
@@ -23,15 +26,16 @@ import MuPromote.Test.Unit.PromotableItem (item2, item3)
 
 -- | The specs of processor tests.
 processorWebSpecs :: Spec
-processorWebSpecs = describe "The processor REST http interface (using kudo for backend incidentally)" $ do
+processorWebSpecs = describe "The processor REST http interface"
   executePromoteKudo
 
 -- | Executing promotions on a kudo processor.
 executePromoteKudo :: Spec
-executePromoteKudo = do
-  describe "Receiving promotion execute requests" $ do
+executePromoteKudo =
+  describe "Receiving promotion execute requests" $
     it "increases the count of promoted items" $ do
-      processorApp <- KW.kudoApp
+      kudo <- spawnMockedProcessor
+      let processorApp = KA.kudoApiMiddleware kudo $ const (return notFoundResp)
 
       maybeHighScore <- runSession (do
 
@@ -46,7 +50,7 @@ executePromoteKudo = do
         -- and then store the transactions rather than just the total aggregate.)
 
         -- Check that the returned location indeed hosts the created resource.
-        highScoreResp <- request $ mkHighScoreRequest
+        highScoreResp <- request mkHighScoreRequest
         assertStatus 200 highScoreResp
         assertContentType "application/json" highScoreResp
 
@@ -57,8 +61,8 @@ executePromoteKudo = do
       shouldSatisfy maybeHighScore isJust
 
       let Just highScore = maybeHighScore
-      shouldBe (elem (0.5, item2) highScore) True
-      shouldBe (elem (0.5, item3) highScore) True
+      shouldBe ((0.5, item2)`elem` highScore) True
+      shouldBe ((0.5, item3) `elem` highScore) True
 
 -- | Synthesize an executedPromotions request
 mkExecuteRequest :: [(Double, PromotableItem)] -> SRequest
@@ -78,3 +82,7 @@ mkHighScoreRequest = defaultRequest {
 decodeHighScoreResp :: SResponse -> Maybe [(Double, PromotableItem)]
 decodeHighScoreResp resp = decode $ simpleBody resp
 
+spawnMockedProcessor :: IO KudoProcessor
+spawnMockedProcessor = do
+  es <- memoryBackedEventStore
+  return (K.spawnKudo es)
