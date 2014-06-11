@@ -12,7 +12,6 @@ import Test.Hspec
 -- | AUT includes
 import MuPromote.Common.Persist
 
-
 persistSpec :: Spec
 persistSpec =
   describe "The event/report persistance" $
@@ -43,10 +42,9 @@ persistSpec =
       actual1 <- evalReport report
       shouldBe actual1 expected1
 
-
 -- | Wrap the creation of a persistent eventstore resource.
 testPersist :: (EventStore Int -> Expectation) -> Expectation
-testPersist testAct = testResources' 100 $ do
+testPersist testAct = testResources' 500 $ do
   persistStoreRH <- dirRes "persistStore" $ return ()
   persistStoreFP <- getDirPath persistStoreRH
   liftIO $ do
