@@ -13,4 +13,3 @@ main :: IO ()
 main = runSpec $ do
   processorSpecs
   processorResourceSpecs
-  processorWebSpecs
