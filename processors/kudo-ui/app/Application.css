@@ -1,4 +1,3 @@
-
 /* Make the central content (.container) more narrow. Inspired by the
  * http://getbootstrap.com/examples/jumbotron-narrow example.
  */
@@ -8,13 +7,12 @@
   }
 }
 
-
 /* Inside the component pane, components should have spacing in-between. */
-.component-pane .node-component {
+.component-pane .component {
   margin-top: 40px;
 }
 
-.node-component h1 {
+.component h1 {
   font-size: 24px; /* The same as h2 */
-  border-bottom: 1px solid rgb(238, 238, 238) /* the same as h1.page-header */
+  border-bottom: 1px solid rgb(238, 238, 238); /* the same as h1.page-header */
 }
