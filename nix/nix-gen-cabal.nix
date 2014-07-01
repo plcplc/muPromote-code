@@ -20,6 +20,8 @@
       set -o verbose
 
       # "Oh the horror"-hack. Works incidentally...
-      sed -e "s;sha256.*$;src = ${src}\;;" -i $out
+      sed -e "s;sha256.*$;src = ${src}\;\n  doCheck = true\;;" -i $out
     '';
+
+    inherit src cabalFile;
   }
