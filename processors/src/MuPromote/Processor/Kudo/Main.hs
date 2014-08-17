@@ -8,10 +8,11 @@ module MuPromote.Processor.Kudo.Main (
 
 import Control.Applicative
 import qualified Data.Map as M
+import Data.Monoid
 import Data.String
 import Data.Typeable
 
-import Network.Wai
+import Network.HTTP.Rest.Server
 import Network.Wai.Application.Static
 import Network.Wai.Handler.Warp
 import Network.Wai.Utils
@@ -20,7 +21,7 @@ import System.EncapsulatedResources
 
 import MuPromote.Common.Persist
 import MuPromote.Processor.Kudo
-import MuPromote.Processor.Kudo.Application ( kudoApiMiddleware )
+import MuPromote.Processor.Kudo.Application ( kudoApiApp )
 
 -- | The type used for event logs. Log entries are sent to the 'Log-Resource'
 -- resource given in the 'config' resource.
@@ -48,7 +49,7 @@ resourceMain = do
 
   liftIO $ do
     let kudo = spawnKudo evStore
-    startWarpAct (kudoApiMiddleware kudo uiApp)
+    startWarpAct (runPartialApplication $ kudoApiApp kudo <> uiApp)
 
 -- | The settings used by the Warp server.
 processorWarpSettings :: (EventLog -> IO ()) -> Settings
@@ -64,15 +65,15 @@ wireLogRes = do
     Nothing -> return $ const $ return ()
 
 -- | Get the resource of static web UI. Optional.
-wireUIRes :: LogAct -> ResourceM Application
+wireUIRes :: LogAct -> ResourceM PartialApplication
 wireUIRes logAct = do
   subResources <- resChildren
   case M.lookup "WebUI-Dir" subResources of
     Just uiBaseDirRh -> do
       baseDir <- getDirPath uiBaseDirRh
       liftIO $ logAct (LogDebug $ "WebUI-Dir: " ++ baseDir)
-      return $ staticApp $ defaultFileServerSettings (fromString baseDir)
-    Nothing -> return $ const (return notFoundResp)
+      return $ toPartialApplication $ staticApp $ defaultFileServerSettings (fromString baseDir)
+    Nothing -> return $ toPartialApplication $ \_ respondC -> respondC notFoundResp
 
 wireStorageRes :: LogAct -> ResourceM (EventStore ProcessorAction)
 wireStorageRes logAct = do

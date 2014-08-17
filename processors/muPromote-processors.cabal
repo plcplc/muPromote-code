@@ -28,7 +28,7 @@ library
 
   build-depends:
     aeson,
-    base >=4.6 && <4.7,
+    base == 4.7.*,
     bytestring,
     cereal,
     conduit,
@@ -65,7 +65,7 @@ Executable kudo
   Main-Is: kudo-main.hs
 
   Build-Depends:
-    base >=4.6 && <4.7,
+    base == 4.7.*,
     encapsulated-resources,
     muPromote-processors
 
@@ -78,7 +78,6 @@ test-suite unittest
   Other-Modules:
     MuPromote.Test.Unit.PromotableItem,
     MuPromote.Test.Unit.PromotionProcessorResource,
-    MuPromote.Test.Unit.PromotionProcessorWeb,
     MuPromote.Test.Unit.Runner
     -- Duplicated from encapsulated-resources
     System.EncapsulatedResources.Test.EncapsulatedResources
@@ -92,7 +91,7 @@ test-suite unittest
 
   build-depends:
     aeson,
-    base >=4.6 && <4.7,
+    base == 4.7.*,
     bytestring,
     conduit,
     containers,

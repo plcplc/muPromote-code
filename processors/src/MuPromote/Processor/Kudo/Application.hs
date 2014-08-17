@@ -10,32 +10,28 @@ module MuPromote.Processor.Kudo.Application (
   highScoreSig,
 
   -- * The Kudo provides encoded as a WAI middleware.
-  kudoApiMiddleware
+  kudoApiApp
 
   ) where
 
 import Control.Monad.IO.Class (liftIO)
+import Data.Monoid
 
 import Network.HTTP.Types.Header
 import Network.HTTP.Types.Status
-
-import Network.Wai
 
 import MuPromote.Common.ProcessorSignature
 import Network.HTTP.Rest.Server
 import MuPromote.Processor.Kudo
 import MuPromote.Processor.Kudo.Operations
 
-kudoApiMiddleware :: KudoProcessor -> Application -> Application
-kudoApiMiddleware kudo app =
+kudoApiApp :: KudoProcessor -> PartialApplication
+kudoApiApp kudo =
   serveRest executePromoteSig
     (\wItms -> do
       res <- liftIO $ executePromote kudo wItms
-      return (created201, [(hLocation, "/test/highScore")], res)
-      )
-    (serveRest highScoreSig
+      return (created201, [(hLocation, "/test/highScore")], res))
+  <> serveRest highScoreSig
       (\() -> do
         res <- liftIO $ listHighscore kudo
-        return (status200, [(hContentType, "application/json")], res)
-        )
-      app)
+        return (status200, [(hContentType, "application/json")], res))

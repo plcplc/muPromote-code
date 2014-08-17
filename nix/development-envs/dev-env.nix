@@ -16,7 +16,7 @@ let
     hsPkgs.hasktags
     ] ++ (hsEnvDeps hsPkgs));
 in
-  pkgs.myEnvFun {
+  pkgs.myEnvFun rec {
     name = envName;
     buildInputs = with pkgs; [
       binutils
@@ -24,7 +24,6 @@ in
       ctags
       vimHugeX
       zsh
-      chromium
       firefox
       hsEnv
       ];

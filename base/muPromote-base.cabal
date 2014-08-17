@@ -26,7 +26,7 @@ library
 
   build-depends:
     aeson,
-    base >=4.6 && <4.7,
+    base == 4.7.*,
     base64-bytestring,
     bytestring,
     cereal,
@@ -66,7 +66,7 @@ test-suite unittest
     ghc-options: -Wall -fno-warn-unused-do-bind
 
   build-depends:
-    base >=4.6 && <4.7,
+    base == 4.7.*,
     bytestring,
     containers,
     data-default,
