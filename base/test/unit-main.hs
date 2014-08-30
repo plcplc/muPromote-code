@@ -5,8 +5,10 @@ import MuPromote.Test.Unit.Runner(runSpec)
 
 -- | Node tests
 import MuPromote.Test.Unit.Persist (persistSpec)
+import MuPromote.Test.Unit.PromotableItem (promotableItemSpec)
 
 -- | Run the unittest test suite.
 main :: IO ()
-main = runSpec
+main = runSpec $ do
   persistSpec
+  promotableItemSpec
