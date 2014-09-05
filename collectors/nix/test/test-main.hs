@@ -14,5 +14,5 @@ import MuPromote.Test.Integration.NixCollector (collectInstalledSpecs)
 -- | Run the test suite.
 main :: IO ()
 main = runSpec $
-  describe "Integration tests"
+  describe "Integration tests (against the current host system)"
     collectInstalledSpecs
