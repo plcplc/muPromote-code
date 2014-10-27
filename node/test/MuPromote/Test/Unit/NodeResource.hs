@@ -20,6 +20,7 @@ import Network.HTTP.Client
 
 import MuPromote.Common.HTTP.Client ( socketManagerSettings )
 import Network.HTTP.Rest.Client
+import Network.HTTP.Rest.Client.HttpClient
 import System.EncapsulatedResources
 import MuPromote.Common.NodeSignature ( getEnrolledItemsSig, postEnrolledItemsSig )
 
@@ -81,21 +82,22 @@ nodeResourceSpecs =
         untilLogged log Node.LogServerStarted
         liftIO $ log (DebugMsg "node resource online")
 
-        clientSockH <- getConnectedSock sockRh
+        clientSockH      <- getConnectedSock sockRh
         let sockSettings = socketManagerSettings clientSockH
-        nodeManager <- liftIO $ newManager sockSettings
-        let enrollReq = liftIO . requestResource nodeManager "localhost" postEnrolledItemsSig
-        let listReq = liftIO $ requestResource nodeManager "localhost"  getEnrolledItemsSig
 
-        enrollReq [(1.2, item2), (1.0, item3)]
-        enrollReq [(1.3, item2)]
+        nodeManager   <- liftIO $ newManager sockSettings
+        let enrollReq = liftIO . requestHttpClient nodeManager def postEnrolledItemsSig
+        let listReq   = liftIO $ requestHttpClient nodeManager def getEnrolledItemsSig
+
+        enrollReq [(item2, 1.2 :: Double), (item3, 1.0)]
+        enrollReq [(item2, 1.3 :: Double)]
 
         enrolled <- listReq
-        liftIO $ mapM_ (log . Item) enrolled
+        liftIO $ log $ Item enrolled
       )
       (\logCh -> do
         logL <- logToList logCh
-        shouldContain logL [Item (2.5, item2), Item (1.0, item3)]
+        shouldContain logL [Item $ Success [(item2, 2.5 :: Double), (item3, 1.0)]]
       )
 
     let testFile  = "<html><head><title>Test</title></head><body><h1>Test</h1></body></html>"

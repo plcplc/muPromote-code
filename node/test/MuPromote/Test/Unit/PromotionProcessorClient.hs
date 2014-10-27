@@ -27,12 +27,13 @@ import MuPromote.Test.Unit.PromotableItem ( item2 )
 import qualified MuPromote.Node.PromotionProcessorClient as PPC
 import MuPromote.Common.ProcessorSignature
 import Network.HTTP.Rest.Server
+import Network.HTTP.Rest.Server.Wai
 
 promotionProcessorClientSpecs :: Spec
 promotionProcessorClientSpecs =
   describe "The http promotion provider client" $ do
     let hostname = "testprovider"
-    let highScoreData = [(42, item2)]
+    let highScoreData = [(item2, 42)]
 
     it "can connect to the highscore rest resource" $ testResources 1000 (\log -> do
 
@@ -99,21 +100,19 @@ promotionProcessorClientSpecs =
   where
 
 -- | The good old 404.
-notFoundResp :: Wai.Response
-notFoundResp = responseLBS status404 [(hContentType, "text/plain")] "Not found."
+-- notFoundResp :: Wai.Response
+-- notFoundResp = responseLBS status404 [(hContentType, "text/plain")] "Not found."
 
 -- | A mock promotion provider that logs recieved requests.
-mockProcessor :: (String -> IO ()) ->  [(Double, PromotableItem)] -> Application
-mockProcessor log highScore req = do
+mockProcessor :: (String -> IO ()) ->  [(PromotableItem, Double)] -> Application
+mockProcessor log highScore req respCont = do
 
   -- reqBody <- lazyRequestBody req
   -- log $ "Request" ++ (show $ (requestMethod req, httpVersion req, requestHeaders req, rawPathInfo req, reqBody))
 
   log $ show $ head $ Wai.requestHeaders req
 
-  serveRest
-    highScoreSig
-    (\ () -> return (status200, [(hContentType, "application/json")], highScore))
-    (const $ return notFoundResp)
-    req
+  runPWA (liftPA $ serve highScoreSigPx
+    (return highScore :: IO [(PromotableItem, Double)]))
+    req respCont
 

@@ -9,13 +9,14 @@ module MuPromote.Node.Web (
   nodeApiApp,
   ) where
 
+import Control.Applicative
 import Control.Monad.IO.Class (liftIO)
+import qualified Data.ByteString.Lazy as LBS
 import Data.Monoid
-
-import Network.HTTP.Types.Header (hContentType, hLocation)
-import Network.HTTP.Types.Status (status200, created201)
+import qualified Data.Map as M
 
 import MuPromote.Common.NodeSignature
+
 import Network.HTTP.Rest.Server
 
 import MuPromote.Node.Base (Node)
@@ -23,16 +24,10 @@ import MuPromote.Node.Operations (enrollItem, enrolledItems)
 
 -- | The WAI Application that exposes the Node over http. Yields 404 on no
 -- matches.
-nodeApiApp :: Node -> PartialApplication
+nodeApiApp :: Node -> PartialApplication IO LBS.ByteString
 nodeApiApp node =
-    serveRest postEnrolledItemsSig
-      (\ wItms -> do
-        liftIO $ mapM_ (uncurry $ enrollItem node) wItms
-        return (created201, [(hLocation, "/test/enrolledItems")], ())
-        )
-    <>
-    serveRest getEnrolledItemsSig
-      (\ () -> do
-        res <- liftIO $ enrolledItems node
-        return (status200, [(hContentType, "application/json")], res)
-        )
+    serve getEnrolledItemsSig
+      (M.toList <$> (liftIO $ enrolledItems node))
+        <>
+    serve postEnrolledItemsSig
+      (\ wItms -> liftIO $ mapM_ (uncurry $ enrollItem node) wItms)

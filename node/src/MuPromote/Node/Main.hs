@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 -- | This module houses the functions for booting up a MuPromote Node as a
 -- standalone executable.
 module MuPromote.Node.Main (
@@ -8,18 +9,21 @@ module MuPromote.Node.Main (
 
 import Control.Applicative
 
+import Data.List
 import qualified Data.Map as M
 import Data.Monoid
 import Data.String
 import Data.Typeable
+import Data.Text (pack)
 
 import Network.Wai.Handler.Warp
   ( defaultSettings, runSettings, runSettingsSocket, Settings,
   setBeforeMainLoop, setPort )
 
-import Network.HTTP.Rest.Server
+import Network.HTTP.Rest.Server.Wai
+
+import Network.Wai
 import Network.Wai.Application.Static
-import Network.Wai.Utils
 
 import System.EncapsulatedResources
 
@@ -64,7 +68,7 @@ resourceMain = do
   -- Construct the node.
   liftIO $ do
     let node = spawnNode evStore nilProcessorClient
-    startWarpAct (runPartialApplication $ nodeApiApp node <> uiApp)
+    startWarpAct (runPWA $ liftPA (nodeApiApp node) <> uiApp)
 
 -- | The settings used by the Warp server.
 nodeWarpSettings :: (EventLog -> IO ()) -> Settings
@@ -80,15 +84,17 @@ wireLogRes = do
     Nothing -> return $ const $ return ()
 
 -- | Get the resource of static web UI. Optional.
-wireUIRes :: LogAct -> ResourceM PartialApplication
+wireUIRes :: LogAct -> ResourceM PartialWaiApplication
 wireUIRes logAct = do
   subResources <- resChildren
   case M.lookup "WebUI-Dir" subResources of
     Just uiBaseDirRh -> do
       baseDir <- getDirPath uiBaseDirRh
       liftIO $ logAct (LogDebug $ "WebUI-Dir: " ++ baseDir)
-      return $ toPartialApplication $ staticApp $ defaultFileServerSettings (fromString baseDir)
-    Nothing -> return $ toPartialApplication $ \_ respondC -> respondC notFoundResp
+      return $ guardApp
+        (\req -> return $ isPrefixOf [pack "node-ui"] (pathInfo req))
+        $ staticApp (defaultFileServerSettings (fromString baseDir))
+    Nothing -> return $ mempty
 
 wireStorageRes :: LogAct -> ResourceM (EventStore NodeAction)
 wireStorageRes logAct = do

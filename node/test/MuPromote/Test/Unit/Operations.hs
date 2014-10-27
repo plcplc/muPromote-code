@@ -16,6 +16,7 @@ module MuPromote.Test.Unit.Operations (
 import Control.Applicative
 import Control.Concurrent.STM (TVar, newTVarIO, modifyTVar, atomically, readTVar)
 import Test.Hspec
+import qualified Data.Map as M
 
 -- | AUT includes.
 import MuPromote.Common.Persist
@@ -41,20 +42,20 @@ presentItemWithWeight =
 
     it "remembers them accordingly" $ do
       node <- fmap snd spawnMockedNode
-      O.enrollItem node 1.1 item2
-      O.enrollItem node 1.2 item3
+      O.enrollItem node item2 1.1
+      O.enrollItem node item3 1.2
 
       items <- O.enrolledItems node
-      shouldBe ((1.1, item2) `elem` items) True
-      shouldBe ((1.2, item3) `elem` items) True
+      shouldBe (item2 `M.lookup` items) (Just 1.1)
+      shouldBe (item3 `M.lookup` items) (Just 1.2)
 
     it "sums weights accordingly" $ do
       node <- fmap snd spawnMockedNode
-      O.enrollItem node 1.1 item2
-      O.enrollItem node 1.2 item2
+      O.enrollItem node item2 1.1
+      O.enrollItem node item2 1.2
 
       items <- O.enrolledItems node
-      shouldBe ((2.3, item2) `elem` items) True
+      shouldBe (item2 `M.lookup` items) (Just 2.3)
 
 -- | Actually execute the promotion action.
 performPromote :: Spec
@@ -68,11 +69,11 @@ performPromoteResets :: Spec
 performPromoteResets =
   it "resets the pending items?" $ do
     node <- fmap snd spawnMockedNode
-    O.enrollItem node 1.1 item2
+    O.enrollItem node item2 1.1
 
     O.executePromote node
     items <- O.enrolledItems node
-    shouldBe items []
+    shouldBe items M.empty
 
 -- | Executing a promote action interfaces with a promotion provider.
 performPromoteProcessor :: Spec
@@ -80,27 +81,26 @@ performPromoteProcessor =
   it "interfaces with the promotion provider" $ do
 
     (spy, node) <- spawnMockedNode
-    O.enrollItem node 1.2 item2
+    O.enrollItem node item2 1.2
 
     O.executePromote node
 
     -- Assert that the mock server has recieved a request of [(2.3, item2)].
     executed <- atomically $ readTVar $ unMock spy
-    shouldBe executed [(1.2, item2)]
+    shouldBe executed $ M.fromList [(item2, 1.2)]
 
 -- | A data type that represents a handle to a mock promotion provider.
 data MockProcessorClientState = MockProcessorClientState {
   -- | The total sequence of executePromote calls recorded.
-  unMock :: TVar [(Double, PromotableItem)]
+  unMock :: TVar (M.Map PromotableItem Double)
   }
 
 -- | a function to initialize a new mock promotion provdier client.
 spawnMockProcessorClient :: IO (MockProcessorClientState, PC.PromotionProcessorClient)
 spawnMockProcessorClient = do
-  state <- MockProcessorClientState <$> newTVarIO []
+  state <- MockProcessorClientState <$> newTVarIO M.empty
   return (state, PromotionProcessorClient {
-    -- Just append the revieved items+weights.
-    PC.executePromote = \iws -> atomically $ modifyTVar (unMock state) (++ iws),
+    PC.executePromote = \iws -> atomically $ modifyTVar (unMock state) (M.unionWith (+) iws),
     listHighScore = error "not implemented."
   })
 

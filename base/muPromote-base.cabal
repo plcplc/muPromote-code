@@ -32,11 +32,13 @@ library
     cereal,
     containers,
     directory,
+    hashable,
     http-client,
     network,
     safecopy,
     text,
     typed-rest-types,
+    typed-rest-encoding-json,
     vector,
     scientific,
     unordered-containers

@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 -- | This module defines 'PromotableItem's and functions handling them.
 module MuPromote.Common.PromotableItem
   where
@@ -12,12 +14,15 @@ module MuPromote.Common.PromotableItem
     -}
 
 import Control.Applicative
+import Control.Monad
 import Data.Aeson as DA
 import Data.Aeson.Types
+import Data.Hashable
 import Data.Scientific
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString.Base64 as BS64
 import qualified Data.HashMap.Lazy as HM
+import Data.SafeCopy
 import Data.Serialize
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -28,16 +33,6 @@ import Data.Text.Encoding as TE
 -- | Promotable items.
 type PromotableItem = PIObject
 
--- | Open-ended collection of data with minimal structure. Specifically,
--- they can be records of objects, lists of objects and data atoms with
--- a descriptive type tag, typically a mime-type.
-data PIObject =
-    -- Keys are a list of unicode symbols, abstract of encoding.
-    PIOKV (HM.HashMap T.Text PIObject)
-  | PIOList [PIObject]
-  | PIODataAtom AtomType AtomData
-  deriving (Eq, Show)
-
 -- | An AtomType is a unicode "self descriptive" string, in the same sense
 -- that mime-types are supposed to be. Also describes the encoding of the
 -- AtomData.
@@ -47,6 +42,83 @@ type AtomType = T.Text
 -- interpretation depending on the readers understanding of the
 -- corresponding AtomType.
 type AtomData = LBS.ByteString
+
+-- | Open-ended collection of data with minimal structure. Specifically,
+-- they can be records of objects, lists of objects and data atoms with
+-- a descriptive type tag, typically a mime-type.
+data PIObject =
+    -- Keys are a list of unicode symbols, abstract of encoding.
+    PIOKV (HM.HashMap T.Text PIObject)
+  | PIOList [PIObject]
+  | PIODataAtom AtomType AtomData
+  deriving (Eq, Show, Ord)
+
+-- $(deriveSafeCopy 0 'base ''PIObject)
+-- -ddump-splices:
+instance SafeCopy PIObject where
+  putCopy (PIOKV arg_a6p1)
+    = contain
+        (do { putWord8 0;
+              safePut_HashMapTextPIObject_a6rm <- getSafePut;
+              safePut_HashMapTextPIObject_a6rm arg_a6p1;
+              return () })
+  putCopy (PIOList arg_a6rn)
+    = contain
+        (do { putWord8 1;
+              safePut_ListPIObject_a6ro <- getSafePut;
+              safePut_ListPIObject_a6ro arg_a6rn;
+              return () })
+  putCopy (PIODataAtom arg_a6rp arg_a6rq)
+    = contain
+        (do { putWord8 2;
+              safePut_Text_a6vx <- getSafePut;
+              safePut_ByteString_a6vy <- getSafePut;
+              safePut_Text_a6vx arg_a6rp;
+              safePut_ByteString_a6vy arg_a6rq;
+              return () })
+  getCopy
+    = contain
+        (label
+           "MuPromote.Common.PromotableItem.PIObject:"
+           (do { tag_a6vz <- getWord8;
+                 case tag_a6vz of {
+                   0 -> do { safeGet_HashMapTextPIObject_a6vA <- getSafeGet;
+                             ((return PIOKV) <*> safeGet_HashMapTextPIObject_a6vA) };
+                   1 -> do { safeGet_ListPIObject_a6vB <- getSafeGet;
+                             ((return PIOList) <*> safeGet_ListPIObject_a6vB) };
+                   2 -> do { safeGet_Text_a6vC <- getSafeGet;
+                             safeGet_ByteString_a6vD <- getSafeGet;
+                             (((return PIODataAtom) <*> safeGet_Text_a6vC)
+                              <*> safeGet_ByteString_a6vD) };
+                   _ -> fail
+                          ("Could not identify tag \""
+                           ++
+                             ((show tag_a6vz)
+                              ++
+                                "\" for type \"MuPromote.Common.PromotableItem.PIObject\" that has only 3 constructors.  Maybe your data is corrupted?")) } }))
+  version = 0
+  kind = base
+  errorTypeName _ = "MuPromote.Common.PromotableItem.PIObject"
+
+-- | A trivial SafeCopy instance for HM.HashMap.
+instance (Hashable k, Eq k, SafeCopy k, SafeCopy v) => SafeCopy (HM.HashMap k v)  where
+
+  kind = base
+  version = 0
+
+  getCopy = contain $ HM.fromList <$> join getSafeGet
+
+  putCopy hm = contain $ join $ getSafePut <*> pure (HM.toList hm)
+
+-- | A trivial Ord instance for HM.HashMap.
+instance (Ord k, Ord v) => Ord (HM.HashMap k v)  where
+
+  -- compare :: a -> a -> Bool
+  -- (compare .) :: (c -> a) -> c -> a -> Ordering
+  -- (. compare) :: ((a -> Ordering) -> d) -> a -> d
+
+  compare = (. compare) (. HM.toList) . HM.toList
+
 
 -- | A plain text string is identified by this type string.
 textType :: AtomType

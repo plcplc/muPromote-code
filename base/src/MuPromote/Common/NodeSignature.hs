@@ -13,19 +13,22 @@ module MuPromote.Common.NodeSignature (
 
   ) where
 
-import MuPromote.Common.PromotableItem (PromotableItem)
+import Data.Proxy
 import Network.HTTP.Rest.Signature
+import Network.HTTP.Rest.Encoding.JSON
+
+import MuPromote.Common.PromotableItem (PromotableItem)
 
 -- | The http api for enrolling a list of items.
-postEnrolledItemsSig :: RestSig
+postEnrolledItemsSig :: Proxy (RestSig
   (S "test" :/: S "enrolledItems" :/: Nil)
-  ('HttpPost [(Double, PromotableItem)] ())
+  ('HttpPost [(PromotableItem, Double)] ()) JSONEncoding)
 
-postEnrolledItemsSig = RestResource
+postEnrolledItemsSig = Proxy
 
 -- | The http api for getting the list of enrolled items.
-getEnrolledItemsSig :: RestSig
+getEnrolledItemsSig :: Proxy (RestSig
   (S "test" :/: S "enrolledItems" :/: Nil)
-  ('HttpGet [(Double, PromotableItem)])
+  ('HttpGet [(PromotableItem, Double)]) JSONEncoding)
 
-getEnrolledItemsSig = RestResource
+getEnrolledItemsSig = Proxy

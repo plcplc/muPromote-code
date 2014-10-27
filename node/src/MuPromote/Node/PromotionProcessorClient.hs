@@ -7,21 +7,23 @@ module MuPromote.Node.PromotionProcessorClient
   PromotionProcessorClient(..)
   )where
 
-import Data.Text
-import Network.HTTP.Client (closeManager, newManager, ManagerSettings)
+import qualified Data.Map as M
+import Data.Text as T
+import Network.HTTP.Client
 
 import MuPromote.Common.PromotableItem (PromotableItem)
-import MuPromote.Common.ProcessorSignature (executePromoteSig, highScoreSig)
+import MuPromote.Common.ProcessorSignature
 import Network.HTTP.Rest.Client
+import Network.HTTP.Rest.Client.HttpClient
 
 -- | A datatype that contains actions for interacting with a particular promotion provider.
 data PromotionProcessorClient = PromotionProcessorClient {
 
   -- | Execute (register) the promotion of a set of items with weights.
-  executePromote :: [(Double, PromotableItem)] -> IO (),
+  executePromote :: M.Map PromotableItem Double -> IO (),
 
   -- | List the total of registered promotions
-  listHighScore :: IO [(Double, PromotableItem)]
+  listHighScore :: IO [(PromotableItem, Double)]
 
   }
 
@@ -35,12 +37,14 @@ httpProcessorClient managerSettings hostname =
   return PromotionProcessorClient {
     executePromote = \items -> do
       manager <- newManager managerSettings
-      res <- requestResource manager hostname executePromoteSig items
+      req <- parseUrl ("http://" ++ T.unpack hostname)
+      Success res <- requestHttpClient manager req executePromoteSigPx (M.toList items)
       closeManager manager
       return res,
     listHighScore = do
       manager <- newManager managerSettings
-      res <- requestResource manager hostname highScoreSig
+      req <- parseUrl ("http://" ++ T.unpack hostname)
+      Success res <- requestHttpClient manager req highScoreSigPx
       closeManager manager
       return res
     }

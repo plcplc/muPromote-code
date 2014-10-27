@@ -1,0 +1,5 @@
+:set -isrc -i../base/src -itest
+:set -fdefer-type-errors
+:set -XOverloadedStrings
+:set -XDataKinds
+:set -XTypeOperators

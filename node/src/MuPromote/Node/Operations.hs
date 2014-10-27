@@ -1,4 +1,5 @@
 -- | This module houses the high level node actions that make up the external
+--
 -- node API.
 module MuPromote.Node.Operations (
 
@@ -12,16 +13,17 @@ module MuPromote.Node.Operations (
   ) where
 
 import Control.Applicative
+import qualified Data.Map.Lazy as M
 import Data.SafeCopy
 import MuPromote.Common.Persist
-import MuPromote.Common.PromotableItem (PromotableItem(..), addItem)
+import MuPromote.Common.PromotableItem (PromotableItem)
 import qualified MuPromote.Node.PromotionProcessorClient as PC
 import MuPromote.Node.Base
 
 -- | A data type representing the contents of the enrolled itmes report.
 data EnrolledItemsReport = EnrolledItemsReport {
   -- | The currently enrolled, unprocessed items.
-  eirEnrolledItems        :: [(Double, PromotableItem)],
+  eirEnrolledItems        :: M.Map PromotableItem Double,
   -- | The items currently being sent to the promotion processor if any.
   eirProcessingInitiated  :: Maybe ItemProcessingBatch,
   -- | The sequence number to be used for the next item processing batch.
@@ -30,7 +32,7 @@ data EnrolledItemsReport = EnrolledItemsReport {
 
 data ItemProcessingBatch = ItemProcessingBatch {
   ipbSeqNum        :: Integer,
-  ipbWeightedItems :: [(Double, PromotableItem)]
+  ipbWeightedItems :: M.Map PromotableItem Double
   }
 
 instance SafeCopy EnrolledItemsReport where
@@ -57,12 +59,12 @@ instance SafeCopy ItemProcessingBatch where
     safePut $ ipbWeightedItems ipb
 
 -- | Register an item for enrollment in the node.
-enrollItem :: Node -> Double -> PromotableItem -> IO ()
-enrollItem node weight item =
-  appendEvent (nodeEventStore node) (EnrollItemAction (weight, item))
+enrollItem :: Node -> PromotableItem -> Double -> IO ()
+enrollItem node item weight =
+  appendEvent (nodeEventStore node) (EnrollItemAction (item, weight))
 
 -- | Dump the list of enrolled items.
-enrolledItems :: Node -> IO [(Double, PromotableItem)]
+enrolledItems :: Node -> IO (M.Map PromotableItem Double)
 enrolledItems node = eirEnrolledItems <$> evalReport (enrolledItemsReport node)
 
 -- | A report on the NodeAction history that holds the set of currently
@@ -73,14 +75,15 @@ enrolledItemsReport node =
 
   where
 
-    emptyReport = EnrolledItemsReport [] Nothing 0
+    emptyReport = EnrolledItemsReport M.empty Nothing 0
 
     go :: EnrolledItemsReport -> NodeAction -> EnrolledItemsReport
 
-    go st (EnrollItemAction wItem)      = st { eirEnrolledItems = addItem wItem (eirEnrolledItems st)}
+    go st (EnrollItemAction (item, weight)) = st {
+      eirEnrolledItems = M.insertWith (+) item weight (eirEnrolledItems st)}
 
     go st ExecutePromoteInitiatedAction = st {
-      eirEnrolledItems = [],
+      eirEnrolledItems = M.empty,
       eirProcessingInitiated = Just ItemProcessingBatch {
         ipbSeqNum = eirNextSeqNum st,
         ipbWeightedItems = eirEnrolledItems st },

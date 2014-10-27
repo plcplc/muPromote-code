@@ -11,7 +11,7 @@ module MuPromote.Node.Base (
 
   ) where
 
-import MuPromote.Common.PromotableItem (PromotableItem(..))
+import MuPromote.Common.PromotableItem (PromotableItem)
 import MuPromote.Common.Persist
 import MuPromote.Node.PromotionProcessorClient
 
@@ -51,7 +51,7 @@ instance SafeCopy NodeAction where
 -- | A data type for the state-changing actions that may be performed with a node.
 data NodeAction =
   -- | Action for enrolling an item.
-  EnrollItemAction! (Double, PromotableItem)
+  EnrollItemAction! (PromotableItem, Double)
 
   -- | Action signalling that the node has started communicating with the
   -- provider about finalizing the currently enrolled item promotions

@@ -1,22 +1,28 @@
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
 -- | This module defines the Rest signatures that make up the web interface to
 -- promotion providers.
 module MuPromote.Common.ProcessorSignature where
 
-import MuPromote.Common.PromotableItem (PromotableItem)
+import Data.Proxy
 import Network.HTTP.Rest.Signature
+import Network.HTTP.Rest.Encoding.JSON
+
+import MuPromote.Common.PromotableItem (PromotableItem)
 
 -- | The http api for executePromote
-executePromoteSig :: RestSig
+type ExecutePromoteSig = Proxy (RestSig
   (S "test" :/: S "executePromote" :/: Nil)
-  ('HttpPost [(Double, PromotableItem)] ())
+  ('HttpPost [(PromotableItem, Double)] ()) JSONEncoding :: *)
 
-executePromoteSig = RestResource
+executePromoteSigPx :: ExecutePromoteSig
+executePromoteSigPx = Proxy
 
 -- | The http api for highScore
-highScoreSig :: RestSig
+type HighScoreSig = Proxy (RestSig
     (S "test" :/: S "highScore" :/: Nil)
-    ('HttpGet [(Double, PromotableItem)])
+    ('HttpGet [(PromotableItem, Double)]) JSONEncoding :: *)
 
-highScoreSig = RestResource
+highScoreSigPx :: HighScoreSig
+highScoreSigPx = Proxy
