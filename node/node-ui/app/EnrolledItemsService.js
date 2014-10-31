@@ -1,7 +1,7 @@
 
 // Expose the list of enrolled items as a REST service with ng-resource.
 MuPromoteNode.factory("EnrolledItemsService", ['$resource', function($resource) {
-  return $resource('/test/enrolledItems', null,
+  return $resource('/api/enrolledItems', null,
     {
       'save': {method: 'POST', isArray: true},
       'query': {method: 'GET', isArray: true},

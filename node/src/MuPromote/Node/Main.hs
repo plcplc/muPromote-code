@@ -92,8 +92,10 @@ wireUIRes logAct = do
       baseDir <- getDirPath uiBaseDirRh
       liftIO $ logAct (LogDebug $ "WebUI-Dir: " ++ baseDir)
       return $ guardApp
-        (\req -> return $ isPrefixOf [pack "node-ui"] (pathInfo req))
-        $ staticApp (defaultFileServerSettings (fromString baseDir))
+        (\req -> return $ isPrefixOf [pack "ui"] (pathInfo req))
+        $ \req respC
+          -> staticApp (defaultFileServerSettings (fromString baseDir))
+             req {pathInfo = drop 1 $ pathInfo req} respC
     Nothing -> return $ mempty
 
 wireStorageRes :: LogAct -> ResourceM (EventStore NodeAction)
