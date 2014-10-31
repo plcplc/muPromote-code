@@ -8,8 +8,8 @@ import Control.Monad.Trans.Error
 -- and post them to a node (currently hardwired in source code).
 main :: IO ()
 main = do
-  [hostName] <- getArgs
-  res <- runErrorT $ collectItems >>= postItems hostName
+  [url] <- getArgs
+  res <- runErrorT $ collectItems >>= postItems url
   case res of
     Left err -> print err
     Right () -> print "Success"

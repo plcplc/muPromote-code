@@ -8,6 +8,8 @@ import MuPromote.Common.PromotableItem
 import MuPromote.Common.NodeSignature
 import MuPromote.Collector.Nix
 import Network.HTTP.Rest.Client
+import Network.HTTP.Rest.Client.HttpClient
+import Network.HTTP.Client
 
 collectItems :: ErrorT String IO [PromotableItem]
 collectItems = do
@@ -17,12 +19,15 @@ collectItems = do
   sequence $ map (ErrorT . return) itemsEither
 
 postItems :: String -> [PromotableItem] -> ErrorT String IO ()
-postItems hostName items = do
-  let wItems = zip [1,1..] items
-   -- Unfortunately requestResourceDef throws exceptions,
-   -- and I don't feel I have the time to refactor it/catch them :-(
-  ErrorT $ Right <$>
-    requestResourceDef (T.pack hostName) postEnrolledItemsSig wItems
+postItems url items = do
+  let wItems = zip items [1,1..]
+  req <- parseUrl url
+  res <- ErrorT $ Right <$> (
+    requestHttpClientDef req postEnrolledItemsSig wItems
+    )
+  case res of
+    ResponseNoParse -> throwError "ResponseNoParse"
+    Success x -> return x
 
 maybeErrorT :: (Error e, Monad m) => e -> Maybe a -> ErrorT e m a
 maybeErrorT errNothing mX = maybe (throwError errNothing) return mX
