@@ -21,14 +21,14 @@ import MuPromote.Common.PromotableItem (PromotableItem)
 
 -- | The http api for enrolling a list of items.
 postEnrolledItemsSig :: Proxy (RestSig
-  (S "test" :/: S "enrolledItems" :/: Nil)
+  (S "api" :/: S "enrolledItems" :/: Nil)
   ('HttpPost [(PromotableItem, Double)] ()) JSONEncoding)
 
 postEnrolledItemsSig = Proxy
 
 -- | The http api for getting the list of enrolled items.
 getEnrolledItemsSig :: Proxy (RestSig
-  (S "test" :/: S "enrolledItems" :/: Nil)
+  (S "api" :/: S "enrolledItems" :/: Nil)
   ('HttpGet [(PromotableItem, Double)]) JSONEncoding)
 
 getEnrolledItemsSig = Proxy
